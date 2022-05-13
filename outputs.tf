@@ -4,56 +4,61 @@
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster"
-  value       = module.eks.cluster_arn
+  value       = try(aws_eks_cluster.this[0].arn, "")
 }
 
 output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = module.eks.cluster_certificate_authority_data
+  value       = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
 }
 
 output "cluster_endpoint" {
   description = "Endpoint for your Kubernetes API server"
-  value       = module.eks.cluster_endpoint
+  value       = try(aws_eks_cluster.this[0].endpoint, "")
 }
 
 output "cluster_id" {
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
-  value       = module.eks.cluster_id
+  value       = try(aws_eks_cluster.this[0].id, "")
 }
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster for the OpenID Connect identity provider"
-  value       = module.eks.cluster_oidc_issuer_url
+  value       = try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "")
+}
+
+output "cluster_version" {
+  description = "The Kubernetes version for the cluster"
+  value       = try(aws_eks_cluster.this[0].version, "")
 }
 
 output "cluster_platform_version" {
   description = "Platform version for the cluster"
-  value       = module.eks.cluster_platform_version
+  value       = try(aws_eks_cluster.this[0].platform_version, "")
 }
 
 output "cluster_status" {
   description = "Status of the EKS cluster. One of `CREATING`, `ACTIVE`, `DELETING`, `FAILED`"
-  value       = module.eks.cluster_status
+  value       = try(aws_eks_cluster.this[0].status, "")
 }
 
 output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
-  value       = module.eks.cluster_primary_security_group_id
+  value       = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
 }
 
 ################################################################################
-# Security Group
+# Cluster Security Group
 ################################################################################
 
 output "cluster_security_group_arn" {
   description = "Amazon Resource Name (ARN) of the cluster security group"
-  value       = module.eks.cluster_security_group_arn
+  value       = try(aws_security_group.cluster[0].arn, "")
 }
 
 output "cluster_security_group_id" {
   description = "ID of the cluster security group"
-  value       = module.eks.cluster_security_group_id
+  value       = try(aws_security_group.cluster[0].id, "")
 }
 
 ################################################################################
@@ -62,12 +67,12 @@ output "cluster_security_group_id" {
 
 output "node_security_group_arn" {
   description = "Amazon Resource Name (ARN) of the node shared security group"
-  value       = module.eks.node_security_group_arn
+  value       = try(aws_security_group.node[0].arn, "")
 }
 
 output "node_security_group_id" {
   description = "ID of the node shared security group"
-  value       = module.eks.node_security_group_id
+  value       = try(aws_security_group.node[0].id, "")
 }
 
 ################################################################################
@@ -76,12 +81,12 @@ output "node_security_group_id" {
 
 output "oidc_provider" {
   description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
-  value       = module.eks.oidc_provider
+  value       = try(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://", ""), "")
 }
 
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`"
-  value       = module.eks.oidc_provider_arn
+  value       = try(aws_iam_openid_connect_provider.oidc_provider[0].arn, "")
 }
 
 ################################################################################
@@ -90,17 +95,17 @@ output "oidc_provider_arn" {
 
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster"
-  value       = module.eks.cluster_iam_role_name
+  value       = try(aws_iam_role.this[0].name, "")
 }
 
 output "cluster_iam_role_arn" {
   description = "IAM role ARN of the EKS cluster"
-  value       = module.eks.cluster_iam_role_arn
+  value       = try(aws_iam_role.this[0].arn, "")
 }
 
 output "cluster_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = module.eks.cluster_iam_role_unique_id
+  value       = try(aws_iam_role.this[0].unique_id, "")
 }
 
 ################################################################################
@@ -109,7 +114,7 @@ output "cluster_iam_role_unique_id" {
 
 output "cluster_addons" {
   description = "Map of attribute maps for all EKS cluster addons enabled"
-  value       = module.eks.cluster_addons
+  value       = aws_eks_addon.this
 }
 
 ################################################################################
@@ -118,7 +123,7 @@ output "cluster_addons" {
 
 output "cluster_identity_providers" {
   description = "Map of attribute maps for all EKS identity providers enabled"
-  value       = module.eks.cluster_identity_providers
+  value       = aws_eks_identity_provider_config.this
 }
 
 ################################################################################
@@ -127,12 +132,12 @@ output "cluster_identity_providers" {
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = module.eks.cloudwatch_log_group_name
+  value       = try(aws_cloudwatch_log_group.this[0].name, "")
 }
 
 output "cloudwatch_log_group_arn" {
   description = "Arn of cloudwatch log group created"
-  value       = module.eks.cloudwatch_log_group_arn
+  value       = try(aws_cloudwatch_log_group.this[0].arn, "")
 }
 
 ################################################################################
@@ -141,7 +146,7 @@ output "cloudwatch_log_group_arn" {
 
 output "fargate_profiles" {
   description = "Map of attribute maps for all EKS Fargate Profiles created"
-  value       = module.eks.fargate_profiles
+  value       = module.fargate_profile
 }
 
 ################################################################################
@@ -150,12 +155,12 @@ output "fargate_profiles" {
 
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
-  value       = module.eks.eks_managed_node_groups
+  value       = module.eks_managed_node_group
 }
 
 output "eks_managed_node_groups_autoscaling_group_names" {
   description = "List of the autoscaling group names created by EKS managed node groups"
-  value       = module.eks.eks_managed_node_groups_autoscaling_group_names
+  value       = flatten([for group in module.eks_managed_node_group : group.node_group_autoscaling_group_names])
 }
 
 ################################################################################
@@ -164,12 +169,12 @@ output "eks_managed_node_groups_autoscaling_group_names" {
 
 output "self_managed_node_groups" {
   description = "Map of attribute maps for all self managed node groups created"
-  value       = module.eks.self_managed_node_groups
+  value       = module.self_managed_node_group
 }
 
 output "self_managed_node_groups_autoscaling_group_names" {
   description = "List of the autoscaling group names created by self-managed node groups"
-  value       = module.eks.self_managed_node_groups_autoscaling_group_names
+  value       = [for group in module.self_managed_node_group : group.autoscaling_group_name]
 }
 
 ################################################################################
@@ -177,6 +182,13 @@ output "self_managed_node_groups_autoscaling_group_names" {
 ################################################################################
 
 output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
+  description = "[DEPRECATED - use `var.manage_aws_auth_configmap`] Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
+  value = templatefile("${path.module}/templates/aws_auth_cm.tpl",
+    {
+      eks_managed_role_arns                   = compact([for group in module.eks_managed_node_group : group.iam_role_arn])
+      self_managed_role_arns                  = compact([for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows"])
+      win32_self_managed_role_arns            = compact([for group in module.self_managed_node_group : group.iam_role_arn if group.platform == "windows"])
+      fargate_profile_pod_execution_role_arns = compact([for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn])
+    }
+  )
 }
