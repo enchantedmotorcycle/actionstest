@@ -63,7 +63,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: "./terraform/eks"
+        working-directory: "./examples/eks_managed_node_group/"
 
     steps:
     # Checkout the repository to the GitHub Actions runner
