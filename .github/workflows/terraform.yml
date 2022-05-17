@@ -77,6 +77,18 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
+    
+    - name: Install Kubectl on runner 
+      uses: azure/setup-kubectl@v2.0
+      with:
+        #version: '<version>' # default is latest stable
+        id: install
+
+    - name: Install Helm on runner 
+      uses: azure/setup-helm@v1
+      with:
+        #version: '<version>' # default is latest stable - could also use v3.8.1
+        id: install
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -99,5 +111,10 @@ jobs:
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
+
+    - name: Terraform Apply
+      uses: actions/checkout@v3
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
