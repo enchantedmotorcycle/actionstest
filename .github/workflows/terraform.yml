@@ -82,13 +82,13 @@ jobs:
       uses: azure/setup-kubectl@v2.0
       with:
         version: 'latest' # default is latest stable
-      id: install kubectl
+      id: install_kubectl
 
     - name: Install Helm on runner 
       uses: azure/setup-helm@v1
       with:
         version: 'latest' # default is latest stable - could also use v3.8.1
-      id: install helm
+      id: install_helm
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
