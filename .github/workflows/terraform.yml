@@ -114,6 +114,10 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
+    - name: EKS login
+      run: |
+        aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
+
     - name: Kubectl output
       run: |
         kubectl get pods -A
