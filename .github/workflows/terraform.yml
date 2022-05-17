@@ -80,15 +80,15 @@ jobs:
     
     - name: Install Kubectl on runner 
       uses: azure/setup-kubectl@v2.0
-      with:
+      #with:
         #version: '<version>' # default is latest stable
-        id: install
+      id: install
 
     - name: Install Helm on runner 
       uses: azure/setup-helm@v1
-      with:
+      #with:
         #version: '<version>' # default is latest stable - could also use v3.8.1
-        id: install
+      id: install
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -113,3 +113,7 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
+    - name: Kubectl output
+      run: |
+        kubectl get pods -A
