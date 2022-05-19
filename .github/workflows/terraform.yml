@@ -121,3 +121,6 @@ jobs:
     - name: Kubectl output
       run: |
         kubectl get pods -A
+
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
