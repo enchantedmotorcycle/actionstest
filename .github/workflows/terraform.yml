@@ -96,6 +96,7 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        terraform_wrapper: false
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -111,7 +112,9 @@ jobs:
 
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+      #cluster_security_group_id=$(terraform output cluster_security_group_id)
     - name: Terraform Apply
+      id: Terraform_Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         terraform apply -auto-approve -input=false
@@ -121,7 +124,8 @@ jobs:
       #aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
       #aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
       run: |
-        cluster_name=$(terraform output cluster_name)
+        cluster_name=output=$(terraform output cluster_name)
+        echo $cluster_name
         echo $cluster_security_group_id
         aws eks --region us-west-2 update-kubeconfig --name $cluster_name
 
