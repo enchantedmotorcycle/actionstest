@@ -113,22 +113,26 @@ jobs:
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+      run: |
+        terraform apply -auto-approve -input=false
+        cluster_security_group_id=$(terraform output cluster_security_group_id)
 
     - name: EKS login
       #aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
       #aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
       run: |
-        aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
+        cluster_name=$(terraform output cluster_name)
+        echo $cluster_security_group_id
+        aws eks --region us-west-2 update-kubeconfig --name $cluster_name
 
     - name: Kubectl output
       run: |
         kubectl get pods -A
 
-    #- name: Deploy airflow helm chart
-    #  run: |
-    #    helm repo add apache-airflow https://airflow.apache.org
-    #    helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
+    - name: Deploy airflow helm chart
+      run: |
+        helm repo add apache-airflow https://airflow.apache.org
+        helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
     
     #- name: Terraform Destroy
     #  run: terraform destroy -auto-approve -input=false
