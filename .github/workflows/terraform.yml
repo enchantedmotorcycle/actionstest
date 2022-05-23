@@ -116,16 +116,18 @@ jobs:
 
     - name: EKS login
       #aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
+      #aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
       run: |
-        aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
+        aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
 
     - name: Kubectl output
       run: |
         kubectl get pods -A
 
-    #- name: Terraform Destroy
-    #  run: terraform destroy -auto-approve -input=false
-    - name: Deploy airflow helm chart
-      run: |
-        helm repo add apache-airflow https://airflow.apache.org
-        helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
+    #- name: Deploy airflow helm chart
+    #  run: |
+    #    helm repo add apache-airflow https://airflow.apache.org
+    #    helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
+    
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
