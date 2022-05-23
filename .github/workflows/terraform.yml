@@ -63,7 +63,8 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: "./examples/eks_managed_node_group/"
+        working-directory: "./infrastructure/"
+        #working-directory: "./examples/eks_managed_node_group/"
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -129,5 +130,5 @@ jobs:
     #    helm repo add apache-airflow https://airflow.apache.org
     #    helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
     
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve -input=false
+    #- name: Terraform Destroy
+    #  run: terraform destroy -auto-approve -input=false
