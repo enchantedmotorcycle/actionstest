@@ -124,7 +124,7 @@ jobs:
       #aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
       #aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
       run: |
-        cluster_name=$(terraform output cluster_name) | sed -e 's|["'\'']||g'
+        cluster_name=$(terraform output cluster_name | sed -e 's|["'\'']||g')
         echo $cluster_name
         echo $cluster_security_group_id
         aws eks --region us-west-2 update-kubeconfig --name $cluster_name
