@@ -115,8 +115,9 @@ jobs:
       run: terraform apply -auto-approve -input=false
 
     - name: EKS login
+      #aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
       run: |
-        aws eks --region us-west-2 update-kubeconfig --name ex-eks-managed-node-group
+        aws eks --region us-west-2 update-kubeconfig --name eks-cb1cui7S
 
     - name: Kubectl output
       run: |
