@@ -138,5 +138,5 @@ jobs:
         helm repo add apache-airflow https://airflow.apache.org
         helm upgrade --install airflow apache-airflow/airflow --namespace airflow --create-namespace
     
-    #- name: Terraform Destroy
-    #  run: terraform destroy -auto-approve -input=false
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
